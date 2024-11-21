@@ -15,3 +15,4 @@ start:
 clean:
 	rm -rf $(VENV_DIR)
 	find . -name "*.pyc" -exec rm -f {} \;
+	docker compose stop

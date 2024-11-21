@@ -33,6 +33,12 @@ Exécutez la commande suivante pour lancer les containers et démarrer le systè
 make install start
 ```
 
+Stoppez le container et nettoyez l'application avec :
+
+```bash
+make clean
+```
+
 ### 3. Accéder à MinIO
 
 - **URL** : [http://localhost:9001](http://localhost:9001)
@@ -101,3 +107,11 @@ Vous pouvez ajouter des documents supplémentaires directement sur MinIO pour en
 - **Ollama 3.2:1b** : Modèle de langage léger utilisé pour la génération des réponses.  
 - **Python 3.12** : Environnement de développement et orchestration du projet.  
 - **Docker** : Conteneurisation des services.
+
+---
+
+## Sources
+
+- [Guide RAG](https://www.datacamp.com/tutorial/llama-3-1-rag)
+- [Documentation LLMs, support de connaissances](https://arxiv.org/pdf/2307.06435#page=36&zoom=100,56,209)
+- [Solana's architecture documentation used](https://solana.com/solana-whitepaper.pdf)
