@@ -1,62 +1,71 @@
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import FAISS
-from langchain_core.output_parsers import StrOutputParser
+import argparse
+
+from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings
-from pypdf import PdfReader
 
 from app.prompt import prompt
-from app.s3 import s3_client
+from app.s3 import FileStorage
 from app.llm import llm
 from app.rag import RAGApplication
 
 BUCKET_NAME = "solana-documentation"
-FILE_NAME = "Solana_ A new architecture for a high performance blockchain.pdf"
 API_KEY = "api_key"
 
-# Download the file
-local_file_path = f"/tmp/{FILE_NAME}"  # Temporary storage for processing
-s3_client.download_file(BUCKET_NAME, FILE_NAME, local_file_path)
+def create_vector_store(docs):
+    embeddings = OllamaEmbeddings(model='llama3.2:1B')
+    # doc_vectors = [embeddings.embed_query(doc.page_content) for doc in docs]
 
-# Read and extract text from the PDF file
-reader = PdfReader(local_file_path)
-pdf_content = ""
-for page in reader.pages:
-    pdf_content += page.extract_text()
+    vector_store = FAISS.from_documents(
+        docs,
+        embedding=embeddings
+    )
 
-if not pdf_content.strip():
-    raise ValueError("Ce PDF ne contient pas de texte. Le RAG nécessite un Corpus de Texte.")
+    return vector_store
 
-# Split the text using LangChain's text splitter
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-docs = text_splitter.create_documents([pdf_content])
-print(f"Number of chunks created: {len(docs)}")
 
-# Display the split documents
-for idx, doc in enumerate(docs):
-    print(f"Document Chunk {idx + 1}:\n{doc.page_content}\n")
+def main():
+    print("Loading...");
+    parser = argparse.ArgumentParser(description="Retrieval-Augmented Generation (RAG) for Solana Documentation.")
+    BUCKET_NAME = "solana-documentation"
 
-# Create OpenAIEmbeddings for documents and store in vectorstores
-embeddings = OllamaEmbeddings(model='llama3.2:1B')
-doc_vectors = [embeddings.embed_query(doc.page_content) for doc in docs]
+    files = FileStorage.list_files_in_bucket(BUCKET_NAME)
+    if not files:
+        print("No files found in the S3 bucket. Exiting.")
+        return
 
-vector_store = FAISS.from_texts(
-    texts=[doc.page_content for doc in docs],
-    embedding=embeddings
-)
+    print("Available files in the S3 bucket:")
+    for idx, file in enumerate(files, start=1):
+        print(f"{idx}. {file}")
 
-retriever = vector_store.as_retriever(k=4)
-rag_chain = prompt | llm | StrOutputParser()
+    file_choice = input("Please choose a file by number: ")
 
-rag_application = RAGApplication(retriever, rag_chain)
+    try:
+        file_choice = int(file_choice)
+        selected_file = files[file_choice - 1]
+        print(selected_file)
+    except (ValueError, IndexError):
+        print("Invalid choice. Exiting.")
+        return
 
-while True:
-    question = input("Send your message >>> ")
-    if question.lower() == "exit":
-        print("Goodbye!")
-        break
+    docs = FileStorage.process_pdf_file(BUCKET_NAME, selected_file)
+    vector_store = create_vector_store(docs) 
+    rag_application = RAGApplication.initialize_rag(vector_store, prompt, llm)
 
-    answer = rag_application.run(question)
+    print("Welcome to the SOLANA RAG Application! Type 'exit' to quit.")
 
-    print("Question: ", question)
-    print("Answer: ", answer)
-    print("-" * 50)  # Separator for readability
+    while True:
+        question = input("Send your message >>> ")
+        if question.lower() == "exit":
+            print("Goodbye!")
+            break
+
+        answer = rag_application.run(question)
+
+        print("")
+        print("Question: ", question)
+        print("")
+        print("Answer: ", answer)
+        print("-" * 50)
+
+if __name__ == "__main__":
+    main()

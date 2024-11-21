@@ -1,3 +1,5 @@
+from langchain_core.output_parsers import StrOutputParser
+
 class RAGApplication:
     def __init__(self, retriever, rag_chain):
         self.retriever = retriever
@@ -9,3 +11,11 @@ class RAGApplication:
         answer = self.rag_chain.invoke({"question": question, "documents": doc_texts})
 
         return answer
+
+    @staticmethod
+    def initialize_rag(vector_store, prompt, llm):
+        retriever = vector_store.as_retriever(k=4)
+        rag_chain = prompt | llm | StrOutputParser()
+        rag_application = RAGApplication(retriever, rag_chain)
+
+        return rag_application
