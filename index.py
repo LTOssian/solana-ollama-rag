@@ -46,3 +46,17 @@ vector_store = FAISS.from_texts(
 
 retriever = vector_store.as_retriever(k=4)
 rag_chain = prompt | llm | StrOutputParser()
+
+rag_application = RAGApplication(retriever, rag_chain)
+
+while True:
+    question = input("Send your message >>> ")
+    if question.lower() == "exit":
+        print("Goodbye!")
+        break
+
+    answer = rag_application.run(question)
+
+    print("Question: ", question)
+    print("Answer: ", answer)
+    print("-" * 50)  # Separator for readability
