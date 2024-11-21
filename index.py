@@ -10,7 +10,6 @@ from app.llm import llm
 from app.rag import RAGApplication
 
 BUCKET_NAME = "solana-documentation"
-API_KEY = "api_key"
 
 def create_vector_store(docs):
     embeddings = OllamaEmbeddings(model='llama3.2:1B')
