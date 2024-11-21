@@ -16,6 +16,12 @@ Ce projet met en œuvre la méthode **Retrieval-Augmented Generation (RAG)**, qu
 
 1. Docker
 2. Ollama avec le modèle `llama3.2:1b`
+ 
+    ```bash
+      ollama pull llama3.2:1b
+      ollama run llama3.2:1b
+    ```
+    
 3. Python 3.12
 
 ### 1. Cloner le dépôt
