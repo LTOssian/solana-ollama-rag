@@ -1,0 +1,7 @@
+langchain
+langchain_community
+langchain-openai
+scikit-learn
+langchain-ollama
+boto3
+pypdf
