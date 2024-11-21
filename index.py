@@ -30,27 +30,27 @@ def clear_screen():
         os.system('clear')
 
 def main():
-    print("Loading...");
+    clear_screen()
     parser = argparse.ArgumentParser(description="Retrieval-Augmented Generation (RAG) for Solana Documentation.")
     BUCKET_NAME = "solana-documentation"
 
     files = FileStorage.list_files_in_bucket(BUCKET_NAME)
     if not files:
-        print("No files found in the S3 bucket. Exiting.")
+        print("Aucun fichier dans le Bucket. Fin du processus.")
         return
 
-    print("Available files in the S3 bucket:")
+    print("Fichiers disponibles dans le bucket S3 :")
     for idx, file in enumerate(files, start=1):
         print(f"{idx}. {file}")
 
-    file_choice = input("Please choose a file by number: ")
+    file_choice = input("Veuillez choisir un fichier (par numéro) : ")
 
     try:
         file_choice = int(file_choice)
         selected_file = files[file_choice - 1]
         print(selected_file)
     except (ValueError, IndexError):
-        print("Invalid choice. Exiting.")
+        print("Choix invalide. Fin du processus.")
         return
 
     docs = FileStorage.process_pdf_file(BUCKET_NAME, selected_file)
@@ -58,18 +58,18 @@ def main():
     rag_application = RAGApplication.initialize_rag(vector_store, prompt, llm)
     
     clear_screen()
-    print("Welcome to the SOLANA RAG Application! Type 'exit' to quit.")
+    print("Bienvenue sur l'application de RAG! 'exit' pour quitter.")
 
     while True:
-        question = input("Send your message >>> ")
+        question = input("Message solana-llama >>> ")
         if question.lower() == "exit":
-            print("Goodbye!")
+            print("Aurevoir!")
             break
 
         answer = rag_application.run(question)
 
         print("")
-        print("Answer: ", answer)
+        print("Réponse: ", answer)
         print("-" * 50)
 
 if __name__ == "__main__":

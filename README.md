@@ -1,97 +1,103 @@
-# Retrieval-Augmented Language Models (RAG)
+# Modèles de Langage Augmentés par Récupération (RAG)
 
-This project implements **Retrieval-Augmented Generation (RAG)** using small Language Models (LLMs) that leverage external knowledge to enhance performance on specific topics. By using a retrieval system, small models can provide answers comparable to larger models, even with a limited memory.
+Ce projet met en œuvre la méthode **Retrieval-Augmented Generation (RAG)**, qui combine des modèles de langage (LLMs) légers avec la récupération de documents externes pour améliorer les performances sur des domaines spécifiques.
 
-## Overview
+## Fonctionnalités Principales
 
-This project implements **Retrieval-Augmented Generation (RAG)**, a method that enhances small Language Models (LLMs) by allowing them to retrieve external, up-to-date information. The LLMs can provide more accurate answers on specific topics by leveraging this external knowledge.
+- **Documentation Solana** préchargée (PDF) dans un stockage MinIO pour consultation.
+- Utilisation de **FAISS** pour une recherche de similarité rapide sur les documents.
+- Génération de réponses avec **llama 3.2:1b**, un modèle de langage léger et performant.
 
-The project is set up with a **MinIO object storage service**, which is configured with a base volume that holds the **Solana documentation PDF**. This PDF serves as the knowledge base for the RAG system. The Solana documentation is indexed and processed, enabling the language model to retrieve relevant sections and answer queries with up-to-date, domain-specific information.
+---
 
-By combining **FAISS** for efficient similarity search and **Ollama 3.2:1b** for language generation, this setup allows small models to perform as effectively as larger models on questions related to Solana, without needing vast computational resources.
+## Guide Rapide
 
-## Technologies
+### Pré-requis
 
-- **MinIO (S3-compatible)**
-- **Python 3.12**
-- **Ollama 3.2:1b**: Lightweight, efficient LLM used for natural language understanding and generation.
+1. Docker
+2. Ollama avec le modèle `llama3.2:1b`
+3. Python 3.12
 
-## Project Stack
-
-- **MinIO**: Object storage for serving and storing document data.
-- **Ollama LLM**: Language model used for processing and generating text based on retrieved information.
-- **FAISS**: Vector database for efficient similarity search on documents.
-- **Python 3.12**: Environment to tie all components together.
-
-## Project Setup
-
-### 1. Clone the Repository
+### 1. Cloner le dépôt
 
 ```bash
-git clone https://github.com/your-username/solana-rag.git
-cd solana-rag
+git clone https://github.com/your-username/solana-ollama-rag.git
+cd solana-ollama-rag
 ```
 
-### 2. Docker Compose - Start MinIO Service
+### 2. Lancer l’application
 
-MinIO is used to handle the object storage for document retrieval. It is exposed on ports `9000` for the S3 interface and `9001` for the web console.
-
-Run the following command to start the MinIO service:
+Exécutez la commande suivante pour lancer les containers et démarrer le système :
 
 ```bash
-docker-compose up -d
+make install start
 ```
 
-#### MinIO Configuration
+### 3. Accéder à MinIO
 
-- **Access Key**: `minioadmin`
-- **Secret Key**: `minioadmin`
-- **Web Console**: [http://localhost:9001](http://localhost:9001)
+- **URL** : [http://localhost:9001](http://localhost:9001)
+- **Identifiants** :
+  - Nom d’utilisateur : `minioadmin`
+  - Mot de passe : `minioadmin`
 
-### 3. Install Dependencies
+Vous pouvez ajouter des documents supplémentaires directement sur MinIO pour enrichir la base de connaissances.
 
-Make sure you have Python 3.12 installed. You can use a virtual environment for isolation.
+---
 
-```bash
-python3 -m venv env
-source env/bin/activate  # For Linux/MacOS
-env\Scripts\activate  # For Windows
-pip install -r requirements.txt
-```
+## Fonctionnement
 
-### 4. Start the Application
+1. **Stockage de documents** :  
+   Les fichiers PDF de la documentation Solana (ou tout autre fichier que vous souhaitez ajouter) sont stockés dans MinIO. Au lancement de l’application, le système se connecte à MinIO pour lister les documents disponibles.
 
-To run the application and start the index creation and retrieval process, execute:
+2. **Sélection du document** :  
+   L’utilisateur choisit un fichier parmi ceux présents dans MinIO. Le fichier est ensuite chargé, extrait et indexé dans un **vector_store** pour permettre une recherche rapide et efficace des informations.
 
-```bash
-python3 index.py
-```
+3. **Indexation** :  
+   Les documents sont indexés à l’aide de **FAISS** pour rendre la récupération des passages pertinents plus rapide et plus précise. Cette indexation permet de retrouver les sections les plus pertinentes d’un document en fonction des requêtes posées.
 
-This will load and index documents from MinIO, allowing the model to retrieve relevant data for improved response generation, and start the CLI.
+4. **Requête** :  
+   Une fois un document sélectionné et indexé, vous pouvez poser des questions sur ce dernier. Le système va :
+   - Récupérer les documents pertinents depuis le **vector_store**.
+   - Générer une réponse en combinant les informations extraites du document et le raisonnement du modèle de langage **Ollama LLM**.
 
-## Usage
+5. **Génération de réponses** :  
+   Le modèle **Ollama 3.2:1b** génère des réponses détaillées et précises en utilisant le contenu des documents récupérés et son propre raisonnement.
 
-Once the application is running, you can interact with the model by calling the retrieval augmented language model via the provided interface or through your preferred means (like a REST API, if set up).
+## Exemple d'utilisation
 
-The integration with **FAISS** will handle the search of the most relevant documents to provide the best possible response based on the question asked.
+1. Lancer l’application :
 
-The model will retrieve relevant documents from the MinIO storage and generate an answer with the most accurate and up-to-date information.
+   ```bash
+   make install start
+   ```
 
-## How It Works
+2. L’application vous présente la liste des fichiers PDF disponibles dans MinIO. Par exemple :
 
-1. **Document Storage in MinIO**:
+   ```cli
+   Fichiers disponibles dans le bucket S3 :
+   1. solana_docs_part1.pdf
+   2. solana_docs_part2.pdf
+   ```
 
-   - Store documents in MinIO that you want to use as the knowledge base.
-   - These documents are then indexed by the FAISS vector store for fast similarity search.
+3. Vous choisissez un fichier (par exemple le fichier n°1) pour l’indexer et le charger dans le **vector_store** :
 
-2. **Querying**:
+   ```cli
+   Veuillez choisir un fichier (par numéro) : 1
+   ```
 
-   - When a query (question) is made, the system retrieves relevant documents from the indexed FAISS vector store.
-   - The **Ollama LLM** processes the query and generates a response by combining the retrieved documents with its own language generation capabilities.
+4. Une fois l'indexation terminée, vous pouvez poser des questions sur ce document. Par exemple :
 
-3. **Retrieval-Augmented Generation**:
-   - This allows even smaller models to perform better by augmenting them with external knowledge through **retrieval** before **generation**.
+   ```cli
+   Send your message >>> Qu'est-ce que la blockchain Solana ?
+   Answer: Solana est une blockchain performante conçue pour des applications à grande échelle...
+   ```
 
-## Conclusion
+---
 
-This project demonstrates how small LLMs can be significantly augmented using **retrieval-based** methods, giving them the capability to answer domain-specific questions with high accuracy without requiring massive model sizes. By using **MinIO** and **FAISS**, this approach ensures scalable and efficient knowledge retrieval.
+## Technologies Utilisées
+
+- **MinIO** : Stockage des documents dans un environnement compatible S3.  
+- **FAISS** : Recherche rapide par similarité vectorielle pour une récupération efficace des documents pertinents.  
+- **Ollama 3.2:1b** : Modèle de langage léger utilisé pour la génération des réponses.  
+- **Python 3.12** : Environnement de développement et orchestration du projet.  
+- **Docker** : Conteneurisation des services.
