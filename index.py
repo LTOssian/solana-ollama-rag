@@ -1,20 +1,9 @@
-import boto3
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from pypdf import PdfReader
 
-MINIO_ENDPOINT = "http://127.0.0.1:9000"
+from app.s3 import s3_client
 BUCKET_NAME = "solana-documentation"
 FILE_NAME = "Solana_ A new architecture for a high performance blockchain.pdf"
-ACCESS_KEY = "minioadmin"
-SECRET_KEY = "minioadmin"
-
-
-s3_client = boto3.client(
-    "s3",
-    endpoint_url=MINIO_ENDPOINT,
-    aws_access_key_id=ACCESS_KEY,
-    aws_secret_access_key=SECRET_KEY,
-)
 
 # Download the file
 local_file_path = f"/tmp/{FILE_NAME}"  # Temporary storage for processing
@@ -26,13 +15,13 @@ pdf_content = ""
 for page in reader.pages:
     pdf_content += page.extract_text()
 
-# Check if text was successfully extracted
 if not pdf_content.strip():
-    raise ValueError("No text could be extracted from the PDF. It may be a scanned image PDF.")
+    raise ValueError("Ce PDF ne contient pas de texte. Le RAG nécessite un Corpus de Texte.")
 
 # Split the text using LangChain's text splitter
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
 docs = text_splitter.create_documents([pdf_content])
+print(f"Number of chunks created: {len(docs)}")
 
 # Display the split documents
 for idx, doc in enumerate(docs):
