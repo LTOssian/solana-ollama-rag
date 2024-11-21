@@ -1,4 +1,5 @@
 import argparse
+import os
 
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings
@@ -22,6 +23,12 @@ def create_vector_store(docs):
 
     return vector_store
 
+
+def clear_screen():
+    if os.name == 'nt':
+        os.system('cls')
+    else:  
+        os.system('clear')
 
 def main():
     print("Loading...");
@@ -50,7 +57,8 @@ def main():
     docs = FileStorage.process_pdf_file(BUCKET_NAME, selected_file)
     vector_store = create_vector_store(docs) 
     rag_application = RAGApplication.initialize_rag(vector_store, prompt, llm)
-
+    
+    clear_screen()
     print("Welcome to the SOLANA RAG Application! Type 'exit' to quit.")
 
     while True:
@@ -61,8 +69,6 @@ def main():
 
         answer = rag_application.run(question)
 
-        print("")
-        print("Question: ", question)
         print("")
         print("Answer: ", answer)
         print("-" * 50)
