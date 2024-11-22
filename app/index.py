@@ -4,11 +4,11 @@ import os
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings
 
-from app.modules.options import Options
-from app.s3 import FileStorage
-from app.llm import BaseLLMApplication, llm
-from app.rag import RAGApplication
-from app.prompt import rag_prompt, base_prompt
+from modules.options import Options
+from modules.s3 import FileStorage
+from models.llm import BaseLLMApplication, llm
+from models.rag import RAGApplication
+from models.prompt import rag_prompt, base_prompt
 
 BUCKET_NAME = "solana-documentation"
 

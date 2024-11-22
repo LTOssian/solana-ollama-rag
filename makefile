@@ -10,7 +10,7 @@ $(VENV_DIR)/bin/activate:
 
 start:
 	docker compose up -d
-	$(VENV_DIR)/bin/python index.py
+	$(VENV_DIR)/bin/python app/index.py
 
 clean:
 	rm -rf $(VENV_DIR)
