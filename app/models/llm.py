@@ -1,8 +1,10 @@
-from langchain_ollama import ChatOllama
 from langchain_core.output_parsers import StrOutputParser
-from langchain.llms.ollama import Ollama 
+from langchain_ollama.llms import OllamaLLM
 
-llm = Ollama(model="llama3.2:1b")
+class LLMFactory:
+    @staticmethod
+    def get_instance(model="llama3.2:1b", temperature=0.7):
+        return OllamaLLM(model=model, temperature=temperature)
 
 class BaseLLMApplication:
 

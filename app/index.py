@@ -6,7 +6,7 @@ from langchain_ollama import OllamaEmbeddings
 
 from modules.options import Options
 from modules.s3 import FileStorage
-from models.llm import BaseLLMApplication, llm
+from models.llm import BaseLLMApplication, LLMFactory
 from models.rag import RAGApplication
 from models.prompt import rag_prompt, base_prompt
 
@@ -57,8 +57,8 @@ def main():
 
     docs = FileStorage.process_pdf_file(BUCKET_NAME, selected_file)
     vector_store = create_vector_store(docs) 
-    rag_application = RAGApplication.initialize_rag(vector_store, rag_prompt, llm)
-    base_llm_application = BaseLLMApplication.initialize_base_llm(base_prompt, llm)
+    rag_application: RAGApplication
+    base_llm_application = BaseLLMApplication
     clear_screen()
     print("\nBienvenue sur l'application de RAG! '/exit' pour quitter.")
 
@@ -67,12 +67,9 @@ def main():
 
         question = input("Message solana-llama >>> ")
         options_manager.parse(question)
-        app: BaseLLMApplication | RAGApplication
-
         if question.lower() == "/exit":
             print("Aurevoir!")
             break
-        
         if (options_manager.options["/help"]):
             print("""
                 Commandes disponibles:
@@ -86,12 +83,14 @@ def main():
             options_manager.reset()
             continue
 
-        if (options_manager.options["/no-rag"]):
-            app = base_llm_application
-        else:
-            app = rag_application
+        rag_application = RAGApplication.initialize_rag(
+            vector_store, rag_prompt, 
+            LLMFactory.get_instance(temperature=options_manager.options["/set-temperature="]))
+        base_llm_application = BaseLLMApplication.initialize_base_llm(
+            base_prompt, 
+            LLMFactory.get_instance(temperature=options_manager.options["/set-temperature="]))
 
-        answer = app.run(options_manager.remaining_question)
+        answer = (base_llm_application if options_manager.options["/no-rag"] else rag_application).run(options_manager.remaining_question)
 
         print("\nRéponse: ", answer)
         print("-" * 50)
