@@ -13,6 +13,9 @@ class Options:
 
     def parse(self, question):
         self.remaining_question = question
+        response = {
+            "temperature-change": False
+        }
         for option in self.options:
             if question.startswith(option):
                 if option.endswith("="): # Handle values setting option
@@ -20,11 +23,14 @@ class Options:
                     if match:
                         self.options[option] = match.group(1).strip()
                         self.remaining_question = ""
+                        response["temperature-change"] = True
                 else: # Handle flags
                     self.options[option] = True
                     self.remaining_question = question[len(option):].strip()
                 break
 
+        return response
+            
     def reset(self):
         self.options = {
                 "/no-rag": False,

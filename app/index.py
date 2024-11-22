@@ -64,12 +64,15 @@ def main():
 
     options_manager = Options()
     while True:
-
         question = input("Message solana-llama >>> ")
-        options_manager.parse(question)
         if question.lower() == "/exit":
             print("Aurevoir!")
             break
+
+        response = options_manager.parse(question)
+        if (response["temperature-change"]):
+            continue
+
         if (options_manager.options["/help"]):
             print("""
                 Commandes disponibles:
