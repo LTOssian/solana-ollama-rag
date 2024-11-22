@@ -21,9 +21,14 @@ class Options:
                 if option.endswith("="): # Handle values setting option
                     match = re.match(f"{re.escape(option)}(.*)", question)
                     if match:
-                        self.options[option] = match.group(1).strip()
+                        value = match.group(1).strip()
+                        try:
+                            response["temperature-change"] = option == "/set-temperature="
+                            self.options[option] = float(value)
+                        except ValueError:
+                            print(f"Valeur invalide pour {option}. Veuillez donner un nombre.")
+                            self.options[option] = None  # Reset to default
                         self.remaining_question = ""
-                        response["temperature-change"] = True
                 else: # Handle flags
                     self.options[option] = True
                     self.remaining_question = question[len(option):].strip()
