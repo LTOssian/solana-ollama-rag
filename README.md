@@ -85,7 +85,11 @@ Dans l'application, vous pouvez utiliser plusieurs commandes pour modifier le co
   Désactive la génération augmentée par la récupération (RAG) pour la question donnée. L'application répondra uniquement en utilisant le modèle de langage de base sans récupérer de documents.
 
 - **`/demo <message>`**  
-  Lance la question en mode démo, en envoyant la question au modèle RAG et le modèle sans modification. Cela peut être utile pour voir la réponse brute du modèle sans l'influence de l'augmentation par récupération.
+  Lance la question en mode démo. Le système génère deux réponses :
+
+  1. Une réponse brute utilisant uniquement le modèle sans récupération (sans RAG).
+  2. Une réponse augmentée par récupération (avec RAG).  
+     Cette option est utile pour comparer la performance du modèle avec et sans les informations des documents récupérés.
 
 - **`/help`**  
   Affiche une liste des commandes disponibles dans l'application, ainsi que des explications sur leur utilisation.
@@ -104,6 +108,9 @@ Voici quelques exemples de commandes que vous pouvez entrer dans l'application :
 Message solana-llama >>> /no-rag Description technique du design du système Solana
 Réponse: ...
 Message solana-llama >>> /set-temperature=0.5
+Message solana-llama >>> /demo Quel est la version de la documentation ?
+Réponse sans RAG: La version de ma documentation en cours est la dernière mise à jour réalisée à la date limite de mes connaissances...
+Réponse avec RAG: Ce document est la v0.8.13 de la documentation de l'architecture Solana
 Message solana-llama >>> /exit
 ```
 
@@ -117,10 +124,10 @@ Message solana-llama >>> /exit
 
 ## Technologies Utilisées
 
-- **MinIO** : Stockage des documents dans un environnement compatible S3.  
-- **FAISS** : Recherche rapide par similarité vectorielle pour une récupération efficace des documents pertinents.  
-- **Ollama 3.2:1b** : Modèle de langage léger utilisé pour la génération des réponses.  
-- **Python 3.12** : Environnement de développement et orchestration du projet.  
+- **MinIO** : Stockage des documents dans un environnement compatible S3.
+- **FAISS** : Recherche rapide par similarité vectorielle pour une récupération efficace des documents pertinents.
+- **Ollama 3.2:1b** : Modèle de langage léger utilisé pour la génération des réponses.
+- **Python 3.12** : Environnement de développement et orchestration du projet.
 - **Docker** : Conteneurisation des services.
 
 ---
