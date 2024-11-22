@@ -8,20 +8,18 @@ Ce projet met en œuvre la méthode **Retrieval-Augmented Generation (RAG)**, qu
 - Utilisation de **FAISS** pour une recherche de similarité rapide sur les documents.
 - Génération de réponses avec **llama 3.2:1b**, un modèle de langage léger et performant.
 
----
-
 ## Guide Rapide
 
 ### Pré-requis
 
 1. Docker
 2. Ollama avec le modèle `llama3.2:1b`
- 
+
     ```bash
       ollama pull llama3.2:1b
       ollama run llama3.2:1b
     ```
-    
+
 3. Python 3.12
 
 ### 1. Cloner le dépôt
@@ -75,36 +73,47 @@ Vous pouvez ajouter des documents supplémentaires directement sur MinIO pour en
 5. **Génération de réponses** :  
    Le modèle **Ollama 3.2:1b** génère des réponses détaillées et précises en utilisant le contenu des documents récupérés et son propre raisonnement.
 
-## Exemple d'utilisation
-
-1. Lancer l’application :
-
-   ```bash
-   make install start
-   ```
-
-2. L’application vous présente la liste des fichiers PDF disponibles dans MinIO. Par exemple :
-
-   ```cli
-   Fichiers disponibles dans le bucket S3 :
-   1. solana_docs_part1.pdf
-   2. solana_docs_part2.pdf
-   ```
-
-3. Vous choisissez un fichier (par exemple le fichier n°1) pour l’indexer et le charger dans le **vector_store** :
-
-   ```cli
-   Veuillez choisir un fichier (par numéro) : 1
-   ```
-
-4. Une fois l'indexation terminée, vous pouvez poser des questions sur ce document. Par exemple :
-
-   ```cli
-   Send your message >>> Qu'est-ce que la blockchain Solana ?
-   Answer: Solana est une blockchain performante conçue pour des applications à grande échelle...
-   ```
-
 ---
+
+## Commandes disponibles
+
+Dans l'application, vous pouvez utiliser plusieurs commandes pour modifier le comportement de l'application. Ces commandes sont saisies directement dans le terminal après la prompt `"Message solana-llama >>>"`.
+
+### Commandes principales
+
+- **`/no-rag <message>`**  
+  Désactive la génération augmentée par la récupération (RAG) pour la question donnée. L'application répondra uniquement en utilisant le modèle de langage de base sans récupérer de documents.
+
+- **`/demo <message>`**  
+  Lance la question en mode démo, en envoyant la question au modèle RAG et le modèle sans modification. Cela peut être utile pour voir la réponse brute du modèle sans l'influence de l'augmentation par récupération.
+
+- **`/help`**  
+  Affiche une liste des commandes disponibles dans l'application, ainsi que des explications sur leur utilisation.
+
+- **`/exit`**  
+  Quitte l'application.
+
+- **`/set-temperature=<n>`**  
+  Définit la température du modèle de langage (ex : `/set-temperature=0.7`). La température contrôle la créativité de la réponse : une valeur plus basse rend le modèle plus déterministe, tandis qu'une valeur plus haute rend les réponses plus variées.
+
+### Exemple d'utilisation
+
+Voici quelques exemples de commandes que vous pouvez entrer dans l'application :
+
+```plaintext
+Message solana-llama >>> /no-rag Description technique du design du système Solana
+Réponse: ...
+Message solana-llama >>> /set-temperature=0.5
+Message solana-llama >>> /exit
+```
+
+## Installation
+
+### Prérequis
+
+- Python 3.11 ou supérieur
+- Docker pour la conteneurisation
+- Ollama avec le modèle `llama3.2:1b`
 
 ## Technologies Utilisées
 
