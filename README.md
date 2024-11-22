@@ -43,7 +43,7 @@ Stoppez le container et nettoyez l'application avec :
 make clean
 ```
 
-### 3. Accéder à MinIO
+### 3. Accéder à MinIO (S3)
 
 - **URL** : [http://localhost:9001](http://localhost:9001)
 - **Identifiants** :
