@@ -4,10 +4,11 @@ import os
 from langchain_community.vectorstores import FAISS
 from langchain_ollama import OllamaEmbeddings
 
-from app.prompt import prompt
+from app.modules.options import Options
 from app.s3 import FileStorage
-from app.llm import llm
+from app.llm import BaseLLMApplication, llm
 from app.rag import RAGApplication
+from app.prompt import rag_prompt, base_prompt
 
 BUCKET_NAME = "solana-documentation"
 
@@ -36,10 +37,10 @@ def main():
 
     files = FileStorage.list_files_in_bucket(BUCKET_NAME)
     if not files:
-        print("Aucun fichier dans le Bucket. Fin du processus.")
+        print("\nAucun fichier dans le Bucket. Fin du processus.")
         return
 
-    print("Fichiers disponibles dans le bucket S3 :")
+    print("\nFichiers disponibles dans le bucket S3 :\n")
     for idx, file in enumerate(files, start=1):
         print(f"{idx}. {file}")
 
@@ -48,7 +49,8 @@ def main():
     try:
         file_choice = int(file_choice)
         selected_file = files[file_choice - 1]
-        print(selected_file)
+
+        print(f"\n{selected_file}")
     except (ValueError, IndexError):
         print("Choix invalide. Fin du processus.")
         return
@@ -58,11 +60,15 @@ def main():
     rag_application = RAGApplication.initialize_rag(vector_store, prompt, llm)
     
     clear_screen()
-    print("Bienvenue sur l'application de RAG! 'exit' pour quitter.")
+    print("\nBienvenue sur l'application de RAG! '/exit' pour quitter.")
 
+    options_manager = Options()
     while True:
+
         question = input("Message solana-llama >>> ")
-        if question.lower() == "exit":
+        options_manager.parse(question)
+
+        if question.lower() == "/exit":
             print("Aurevoir!")
             break
 
@@ -70,6 +76,20 @@ def main():
 
         print("")
         print("Réponse: ", answer)
+        
+        if (options_manager.options["/help"]):
+            print("""
+                Commandes disponibles:
+                /no-rag <message>     Désactiver le RAG sur cette question.
+                /demo <message>       Lancer la question en mode demo.
+                /help                 Montrer les commandes disponibles.
+                /exit                 Quitter l'application.
+                /set-temperature=<n>  Définir la temperture du LLM (ex: /set-temperature=0.7).
+            """)
+
+            options_manager.reset()
+            continue
+
         print("-" * 50)
 
 if __name__ == "__main__":
