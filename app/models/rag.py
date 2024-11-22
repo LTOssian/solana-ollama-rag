@@ -8,8 +8,11 @@ class RAGApplication:
     def run(self, question):
         documents = self.retriever.invoke(question)
         doc_texts = "\\n".join([doc.page_content for doc in documents])
-        answer = self.rag_chain.invoke({"question": question, "documents": doc_texts})
 
+        inputs = {"question": question, "documents": doc_texts}
+
+        answer = self.rag_chain.invoke(inputs)
+        
         return answer
 
     @staticmethod

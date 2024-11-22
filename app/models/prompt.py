@@ -1,6 +1,6 @@
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 
-prompt = PromptTemplate(
+rag_prompt = PromptTemplate(
     template="""You are a highly knowledgeable and concise assistant for answering questions. 
     Use the provided documents to construct an accurate response to the question. 
     Follow these guidelines:
@@ -12,4 +12,13 @@ prompt = PromptTemplate(
     Answer:
     """,
     input_variables=["question", "documents"],
+)
+
+base_prompt = PromptTemplate(
+    template="""You are a highly knowledgeable and concise assistant for answering questions. 
+    
+    Question: {question}
+    Answer:
+    """,
+    input_variables=["question"],
 )
