@@ -136,6 +136,7 @@ Message solana-llama >>> /exit
 
 ## Sources
 
-- [Guide RAG](https://www.datacamp.com/tutorial/llama-3-1-rag)
+- [Guide RAG (outdated but good inspiration)](https://www.datacamp.com/tutorial/llama-3-1-rag)
 - [Documentation LLMs, support de connaissances](https://arxiv.org/pdf/2307.06435#page=36&zoom=100,56,209)
+- [Documentation librairies langchain](https://python.langchain.com/docs/introduction/)
 - [Solana's architecture documentation used](https://solana.com/solana-whitepaper.pdf)
