@@ -1,4 +1,3 @@
-import argparse
 import os
 
 from langchain_community.vectorstores import FAISS
@@ -32,7 +31,6 @@ def clear_screen():
 
 def main():
     clear_screen()
-    parser = argparse.ArgumentParser(description="Retrieval-Augmented Generation (RAG) for Solana Documentation.")
     BUCKET_NAME = "solana-documentation"
 
     files = FileStorage.list_files_in_bucket(BUCKET_NAME)

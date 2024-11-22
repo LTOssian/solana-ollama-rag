@@ -6,4 +6,3 @@ langchain-ollama
 boto3
 pypdf
 faiss-cpu
-argparse
