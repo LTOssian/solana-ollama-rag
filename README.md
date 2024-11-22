@@ -4,7 +4,7 @@ Ce projet met en œuvre la méthode **Retrieval-Augmented Generation (RAG)**, qu
 
 ## Fonctionnalités Principales
 
-- **Documentation Solana** préchargée (PDF) dans un stockage MinIO pour consultation.
+- **Documentation Solana** préchargée (PDF) dans un stockage MinIO pour consultation. (Pour adapter à un usage de production, simplement remplacer les credentials dans le fichier /app/modules/s3.py par vos credentials S3)
 - Utilisation de **FAISS** pour une recherche de similarité rapide sur les documents.
 - Génération de réponses avec **llama 3.2:1b**, un modèle de langage léger et performant.
 
@@ -22,7 +22,7 @@ Ce projet met en œuvre la méthode **Retrieval-Augmented Generation (RAG)**, qu
       ollama run llama3.2:1b
     ```
 
-3. Python 3.12
+3. Python 3.11 ou supérieur
 
 ### 1. Cloner le dépôt
 
@@ -115,14 +115,6 @@ Réponse sans RAG: La version de ma documentation en cours est la dernière mise
 Réponse avec RAG: Ce document est la v0.8.13 de la documentation de l'architecture Solana
 Message solana-llama >>> /exit
 ```
-
-## Installation
-
-### Prérequis
-
-- Python 3.11 ou supérieur
-- Docker pour la conteneurisation
-- Ollama avec le modèle `llama3.2:1b`
 
 ## Technologies Utilisées
 
