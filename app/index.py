@@ -58,7 +58,7 @@ def main():
     rag_application: RAGApplication
     base_llm_application = BaseLLMApplication
     clear_screen()
-    print("\nBienvenue sur l'application de RAG! '/exit' pour quitter.")
+    print("\nBienvenue sur l'application de RAG! '/help' pour les commandes, '/exit' pour quitter.")
 
     options_manager = Options()
     while True:

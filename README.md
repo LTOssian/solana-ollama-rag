@@ -10,6 +10,8 @@ Ce projet met en œuvre la méthode **Retrieval-Augmented Generation (RAG)**, qu
 
 ## Guide Rapide
 
+![demo screenshot](./docs/demo-solana-rag.png)
+
 ### Pré-requis
 
 1. Docker
