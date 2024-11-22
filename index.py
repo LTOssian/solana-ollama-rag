@@ -57,8 +57,8 @@ def main():
 
     docs = FileStorage.process_pdf_file(BUCKET_NAME, selected_file)
     vector_store = create_vector_store(docs) 
-    rag_application = RAGApplication.initialize_rag(vector_store, prompt, llm)
-    
+    rag_application = RAGApplication.initialize_rag(vector_store, rag_prompt, llm)
+    base_llm_application = BaseLLMApplication.initialize_base_llm(base_prompt, llm)
     clear_screen()
     print("\nBienvenue sur l'application de RAG! '/exit' pour quitter.")
 
@@ -67,15 +67,11 @@ def main():
 
         question = input("Message solana-llama >>> ")
         options_manager.parse(question)
+        app: BaseLLMApplication | RAGApplication
 
         if question.lower() == "/exit":
             print("Aurevoir!")
             break
-
-        answer = rag_application.run(question)
-
-        print("")
-        print("Réponse: ", answer)
         
         if (options_manager.options["/help"]):
             print("""
@@ -90,7 +86,16 @@ def main():
             options_manager.reset()
             continue
 
+        if (options_manager.options["/no-rag"]):
+            app = base_llm_application
+        else:
+            app = rag_application
+
+        answer = app.run(options_manager.remaining_question)
+
+        print("\nRéponse: ", answer)
         print("-" * 50)
+        options_manager.reset()
 
 if __name__ == "__main__":
     main()
