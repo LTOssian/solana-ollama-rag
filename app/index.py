@@ -91,9 +91,15 @@ def main():
             base_prompt, 
             LLMFactory.get_instance(temperature=options_manager.options["/set-temperature="]))
 
-        answer = (base_llm_application if options_manager.options["/no-rag"] else rag_application).run(options_manager.remaining_question)
+        if (options_manager.options["/demo"]):
+            rag_answer= rag_application.run(options_manager.remaining_question)
+            norag_answer= base_llm_application.run(options_manager.remaining_question)
 
-        print("\nRéponse: ", answer)
+            print("\nRéponse sans RAG: ", norag_answer)
+            print("\nRéponse avec RAG: ", rag_answer)
+        else:
+            answer = (base_llm_application if options_manager.options["/no-rag"] else rag_application).run(options_manager.remaining_question)
+            print("\nRéponse: ", answer)
         print("-" * 50)
         options_manager.reset()
 
